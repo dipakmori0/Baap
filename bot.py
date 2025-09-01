@@ -1,6 +1,5 @@
 import requests
 import sqlite3
-from random import randint
 import telebot
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
@@ -30,7 +29,6 @@ def execute_db(query, params=(), fetch=False):
     cur.close()
     return result
 
-# Ensure table exists
 execute_db('''CREATE TABLE IF NOT EXISTS users (
     user_id TEXT PRIMARY KEY,
     credits INTEGER DEFAULT 3,
@@ -98,7 +96,8 @@ def generate_vehicle_report(vin):
             return f"❌ Vehicle info not found for VIN: {vin}"
         lines = ["🚗 VEHICLE INFORMATION"]
         for k, v in response.items():
-            if isinstance(v, bool): v = "✅" if v else "❌"
+            if isinstance(v, bool):
+                v = "✅" if v else "❌"
             lines.append(f"{k.replace('_',' ').title()}: {v}")
         return "\n".join(lines)
     except:
@@ -108,7 +107,8 @@ def generate_vehicle_report(vin):
 bot = telebot.TeleBot(BOT_TOKEN)
 
 def check_joined(user_id):
-    return True  # Add real join check if needed
+    # Placeholder, replace with real Telegram join check if needed
+    return True
 
 @bot.message_handler(commands=["start"])
 def start(message):
@@ -153,7 +153,8 @@ def callback(call: CallbackQuery):
         msg = bot.send_message(user_id, "🚗 Enter vehicle VIN or number:")
         bot.register_next_step_handler(msg, process_vehicle)
     elif call.data == "balance":
-        bot.send_message(user_id, f"💳 Your credits: {get_credits(user_id)}")
+        credits = get_credits(user_id)
+        bot.send_message(user_id, f"💳 Your credits: {credits}")
     elif call.data == "referral":
         bot.send_message(user_id, f"🔗 Your referral link:\n{get_referral_link(user_id)}")
     elif call.data == "clone":
